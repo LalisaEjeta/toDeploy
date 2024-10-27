@@ -65,7 +65,7 @@ bot.on('message', async (msg) => {
             userData[chatId].step = 'awaiting_payment_screenshot'; // Move to the next step
 
             // Send bank account details to the user
-            bot.sendMessage(chatId, `Thank you! Please send your payment to the following bank account:\n\nAccount Name: Pastor Tizitawu Samuel\nAccount Number: 123456789\n\nAfter sending, please provide a screenshot of your payment.`);
+            bot.sendMessage(chatId, `Thank you! Please send your payment to the following bank account:\n\nAccount Name: Tekedem Samuel Kassa \nAccount Number: 1000369555007\n\nAfter sending, please provide a screenshot of your payment.`);
 
         } else if (currentStep === 'awaiting_payment_screenshot') {
             // Handle photo messages for payment screenshot
