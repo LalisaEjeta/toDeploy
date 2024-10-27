@@ -28,15 +28,36 @@ async function compressImage() {
 // Store user data temporarily (in memory for simplicity)
 const userData = {};
 
-// Function to validate phone number format
-function isValidPhoneNumber(phone) {
-    const phoneRegex = /^(\+2519|09)\d{8}$/; // Regex for Ethiopian phone number
-    return phoneRegex.test(phone);
-}
-
 // Listen for any kind of message
 bot.on('message', async (msg) => {
     const chatId = msg.chat.id;
+
+    // Command handling (works at any stage)
+    if (msg.text) {
+        const text = msg.text.toLowerCase();
+
+        if (text === '/start') {
+            await compressImage();
+            bot.sendPhoto(chatId, outputImagePath, {
+                caption: 'This is a bot to buy the Album by Pastor Tizitawu Samuel. Please click the button below to buy it:',
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            { text: 'Buy Album', callback_data: 'buy_album' }
+                        ],
+                    ],
+                },
+            });
+            return;
+        } else if (text === '/help') {
+            return bot.sendMessage(chatId, 'This is a bot to buy Pastor Tizitaw Samuel album 8 songs. The followings are commands to use in this bot:\n/start - View album cover and buy options\n/help - Get help information\n/cancel - Cancel current operation\n/ping - Check if the bot works \n\nYou can contact us on @Tizitaw1 if you have any questions or problems');
+        } else if (text === '/cancel') {
+            delete userData[chatId];
+            return bot.sendMessage(chatId, 'Operation canceled. You can start again by typing /start.');
+        } else if (text === '/ping') {
+            return bot.sendMessage(chatId, 'Bot is active!');
+        }
+    }
 
     // Check if the user is in a specific step of the process
     if (userData[chatId] && userData[chatId].step) {
@@ -47,28 +68,21 @@ bot.on('message', async (msg) => {
             userData[chatId].step = 'awaiting_phone'; // Move to the next step
 
             // Send message to the user
-            bot.sendMessage(chatId, 'Thank you, ' + msg.text + '! Please provide your phone number in one of the options below:\n\n1. Press the button to share your current account phone number\n2. Write in the format +2519xxxxxxxx/+2517xxxxxxxx or 09xxxxxxxx/07xxxxxxxx and send\n\nType /cancel to cancel the current operation.');
+            bot.sendMessage(chatId, 'Thank you, ' + msg.text + '! \nPlease enter your telegram phone number:\n\nType /cancel to cancel the current operation.');
 
         } else if (currentStep === 'awaiting_phone') {
-            // Check if the user typed /cancel to cancel the operation
             if (msg.text.toLowerCase() === '/cancel') {
                 delete userData[chatId]; // Clear user data for this user
                 return bot.sendMessage(chatId, 'Operation canceled. You can start again by typing /start.');
-            }
-
-            // Validate phone number
-            if (!isValidPhoneNumber(msg.text)) {
-                return bot.sendMessage(chatId, 'Please enter a valid phone number in the format +2519xxxxxxxx or 09xxxxxxxx.');
             }
 
             userData[chatId].phone = msg.text; // Store user's phone number
             userData[chatId].step = 'awaiting_payment_screenshot'; // Move to the next step
 
             // Send bank account details to the user
-            bot.sendMessage(chatId, `Thank you! Please send your payment to the following bank account:\n\nAccount Name: Tekedem Samuel Kassa \nAccount Number: 1000369555007\n\nAfter sending, please provide a screenshot of your payment.`);
+            bot.sendMessage(chatId, `Thank you! Please send 200 birr (200ETB) to the following bank account:\n\nNigd bank \nAccount Name: Tekedem Samuel Kassa \nAccount Number: 1000369555007 \n\nFor those who live in USA(FirstBank)\nAccount: 4481297222 \nRouting: 107005047 \n\nPaypal payment \nPaypal number:333215284235 \nRouting: 031101279 \nPaypal link: (PayPal.Me/tizitawsamuel)\n\nAfter sending, please provide a screenshot of your payment.`);
 
         } else if (currentStep === 'awaiting_payment_screenshot') {
-            // Handle photo messages for payment screenshot
             if (msg.photo) {
                 const fileId = msg.photo[msg.photo.length - 1].file_id; // Get the highest resolution photo
                 const filePath = await bot.getFileLink(fileId);
@@ -104,28 +118,10 @@ bot.on('message', async (msg) => {
             }
         }
     } else {
-        // Check if the received message is a text message
+        // Default message if the user is not in any process
         if (msg.text && typeof msg.text === 'string') {
-            // Handle the command
-            if (msg.text.toLowerCase() === '/start') {
-                await compressImage();
-
-                bot.sendPhoto(chatId, outputImagePath, {
-                    caption: 'This is a bot to buy the Album by Pastor Tizitawu Samuel. Please click the button below to buy it:',
-                    reply_markup: {
-                        inline_keyboard: [
-                            [
-                                { text: 'Buy Album', callback_data: 'buy_album' }
-                            ],
-                        ],
-                    },
-                });
-            } else {
-                // Default message only if the user is not in the middle of any process
-                bot.sendMessage(chatId, 'Hello! Please type /start to see the album cover and buttons.');
-            }
+            bot.sendMessage(chatId, 'Hello! Please type /start to see the album cover and buttons.');
         } else {
-            // Handle non-text messages
             bot.sendMessage(chatId, 'Please send a text message. Type /start to begin.');
         }
     }
@@ -149,7 +145,7 @@ bot.on('callback_query', async (callbackQuery) => {
     } else if (data.startsWith('not_paid_')) {
         const userId = data.split('_')[2]; // Extract the user's chat ID
         // Notify the user that the payment was not successful
-        bot.sendMessage(userId, 'Unfortunately, we could not verify your payment. Please try again.');
+        bot.sendMessage(userId, 'Unfortunately, we could not verify your payment. Please try again.\n\nYou can contact us on @Tizitaw1 if you have any questions');
         bot.sendMessage(chatId, 'User has been notified of payment failure.');
         delete userData[userId]; // Clear user data after notifying the user
 
