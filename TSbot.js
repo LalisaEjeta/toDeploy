@@ -80,7 +80,7 @@ bot.on('message', async (msg) => {
             userData[chatId].step = 'awaiting_payment_screenshot'; // Move to the next step
 
             // Send bank account details to the user
-            bot.sendMessage(chatId, `Thank you! Please send 200 birr (200ETB) to the following bank account:\n\nNigd bank \nAccount Name: Tekedem Samuel Kassa \nAccount Number: 1000369555007 \n\nFor those who live in USA(FirstBank)\nAccount: 4481297222 \nRouting: 107005047 \n\nPaypal payment \nPaypal number:333215284235 \nRouting: 031101279 \nPaypal link: (PayPal.Me/tizitawsamuel)\n\nAfter sending, please provide a screenshot of your payment.`);
+            bot.sendMessage(chatId, `Thank you! Please send 200 birr (200ETB) or 40 dollar (USD) to the following bank account:\n\nNigd bank \nAccount Name: Tekedem Samuel Kassa \nAccount Number: 1000369555007 \n\nFor those who live in USA(FirstBank)\nAccount: 4481297222 \nRouting: 107005047 \n\nPaypal payment \nPaypal number:333215284235 \nRouting: 031101279 \nPaypal link: (PayPal.Me/tizitawsamuel)\n\nAfter sending, please provide a screenshot of your payment.`);
 
         } else if (currentStep === 'awaiting_payment_screenshot') {
             if (msg.photo) {
