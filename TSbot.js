@@ -10,7 +10,7 @@ const token = process.env.BOT_TOKEN; // Ensure to store your token securely
 const bot = new TelegramBot(token, { polling: true });
 
 // Your Telegram ID (admin)
-const adminId = 462078585; // Replace with your Telegram ID
+const adminId = 715024870; // Replace with your Telegram ID
 
 // Path to the original and processed cover images
 const inputImagePath = path.join(__dirname, 'Cover.jpg');
